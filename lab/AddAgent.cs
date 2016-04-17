@@ -11,13 +11,14 @@ namespace lab
         private bool _HasFinished;
         int howMuch;
         int id;
-        public int suma1{
-            get{ return suma;}
+        public int suma1
+        {
+            get { return suma; }
 
-}
+        }
         int suma = 0;
         List<int> L1;
-        public AddAgent(int id,List<int> L1, int howMuch)
+        public AddAgent(int id, List<int> L1, int howMuch)
         {
             this.L1 = L1;
             this.id = id;
@@ -33,18 +34,10 @@ namespace lab
 
         public IEnumerator<float> CoroutineUpdate()
         {
-            
+
             for (int i = 0; L1.Any(); i++)
             {
-                for (int j = 0; (j < howMuch)&& L1.Any(); j++)
-                {
-                    var item = L1.First();
-                    L1.Remove(item);
-                    suma = suma + item;
-                }
-
-                Console.WriteLine("id: {1} summa:{0}", suma,id);
-                
+                Update();
                 yield return i;
             }
             HasFinished = true;
@@ -52,14 +45,27 @@ namespace lab
         }
         public void Run()
         {
-         
+            lock (L1)
+            {
                 Update();
-
+                L1.Insert(0, suma);
+                suma = 0;
+            }
         }
 
         public void Update()
         {
-            int suma = 0;
+
+            Console.Write("{0}ADD ", id);
+            for (int j = 0; (j < howMuch) && L1.Any(); j++)
+            {
+                var item = L1.First();
+                L1.Remove(item);
+                Console.Write("{0} ", item);
+                suma = suma + item;
+            }
+            Console.Write("={0}\n", suma);
+
         }
     }
 }
