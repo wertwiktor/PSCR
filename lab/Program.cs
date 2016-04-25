@@ -9,98 +9,51 @@ namespace lab
 {
     class Program
     {
-        //paramerty
-        static int n = 2; //ilosc agentow
-        static int m = 10; //rozmiar listy
-        static int e = 2;//ilosc etapów
 
-        static List<int> L1;
+        static int randFunctionGeneratorVarible = 1;
+        static Bank bank;
+        static int suma = 0;
+        static int iterations = 100;
 
         static List<IRunnable> GenerateRunnables()
         {
             List<IRunnable> agenty = new List<IRunnable>();
 
-            for (int i = 0; i < n; i++)
-                agenty.Add(new AddAgent(i, L1, m / (e * n)));
+            bank =  new Bank(0);
+            Random rnd = new Random(randFunctionGeneratorVarible);
+
+            for (int i = 0; i < iterations; i++)
+            {
+                int temp = rnd.Next(-100, 100);
+                agenty.Add(new AddAgent(bank, temp));
+                suma += temp;
+            }
             return agenty;
         }
 
-        public static void FillListWithPseudoRandomData(int howMany)
-        {
-            Random rnd = new Random(1);
-            L1 = new List<int>();
-            for (int i = 0; i < howMany; i++)
-                L1.Add(rnd.Next(1, 100));
-        }
 
-        public static void RunThreads()  
+        public static void RunThreads()
         {
             List<Thread> startedThread = new List<Thread>();
             List<IRunnable> agenty = new List<IRunnable>(GenerateRunnables());
 
-            for (int i = 1; i <= e; i++)
+            foreach (IRunnable agent in agenty)
             {
-                Console.WriteLine("ETAP: {0}",i);
-                for (int j = 1; j <= n; j++)
-                {
-                    Thread thread = new Thread(agenty.ElementAt(j-1).Run);
-                    thread.Start();
-                    startedThread.Add(thread);
-                }
-                foreach (Thread started in startedThread)
-                    started.Join();
+                Thread thread = new Thread(agent.Run);
+                thread.Start();
+                startedThread.Add(thread);
             }
 
-            int suma = 0;
-            foreach (IRunnable agent in agenty)
-                suma = suma + agent.suma1;
+            foreach (Thread started in startedThread)
+                started.Join();
 
-            Console.WriteLine("SUMA KONCOWA: {0}", suma);
+
+
         }
-
-        public static void ShowList(List<int> List)
-        {
-            Console.WriteLine("\nElementy listy:");
-            foreach (int element in List)
-                Console.WriteLine("{0}", element);
-            Console.WriteLine("");
-        }
-
-        public static void SumList(List<int> List)
-        {
-            int suma = 0;
-            foreach (int element in List)
-                suma = suma + element;
-            Console.WriteLine("SUMA LISTY: {0}", suma);
-        }
-        
-        static void RunFiber()
-        {
-            List<IRunnable> agenty = new List<IRunnable>(GenerateRunnables());
-            var mlist = agenty.Select(p => p.CoroutineUpdate());
-            while (agenty.Where(p => p.HasFinished == false).Any())
-            {
-                Console.WriteLine("ETAP");
-                foreach (var a in mlist)
-                    a.MoveNext();
-                
-            } 
-
-            int suma = 0;
-            foreach(IRunnable agent in agenty)
-                suma = suma + agent.suma1;
-
-            Console.WriteLine("SUMA KONCOWA: {0}",suma);
-        }
-        
         static void Main(string[] args)
         {
-            FillListWithPseudoRandomData(m);
-            ShowList(L1);
-            SumList(L1);
-            //RunFiber();
             RunThreads();
-            ShowList(L1);
+            Console.WriteLine("Suma: {0} Suma:{1}", suma,bank.GetValue());
             Console.ReadKey();
         }
     }

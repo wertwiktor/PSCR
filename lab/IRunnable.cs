@@ -11,6 +11,5 @@ namespace lab
         void Run();
         IEnumerator<float> CoroutineUpdate();
         bool HasFinished { get; set; }
-        int suma1 { get; }
     }
 }
