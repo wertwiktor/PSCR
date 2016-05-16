@@ -25,8 +25,8 @@ namespace lab
             for (int i = 0; i < iterations; i++)
             {
                 int temp = rnd.Next(-100, 100);
-                agenty.Add(new AddAgent(bank, temp));
-                suma += temp;
+                agenty.Add(new AddAgent(bank, 1));// temp));
+                suma += 1;// temp;
             }
             return agenty;
         }
@@ -45,7 +45,13 @@ namespace lab
             }
 
             foreach (Thread started in startedThread)
+            {
                 started.Join();
+            }
+ /*           for (int i = 0; i < agenty.Count; i++)
+            {
+                Console.WriteLine("Runnable id {3} Spinlock enters: {0}  fails {1}   successes {2}", (Addagenty[i])
+            }*/
 
 
 
